@@ -101,21 +101,19 @@ def metadata_builder(prompt:str,negative_prompt:str)->Metadata:
     except:
         n_samples = 1
     return Metadata(
-        metadata = Metadata(
-            prompt= prompt,
-            negative_prompt = negative_prompt,
-            model = Model.V3,
-            action = Action.GENERATE,
-            sampler = sampler,
-            steps = steps,
-            sm = sema,
-            sm_dyn = dyn,
-            scale = scale,
-            cfg_rescale = cfg_rescale,
-            width=image_size[0],
-            height=image_size[1],
-            n_samples=n_samples,
-            )
+        prompt= prompt,
+        negative_prompt = negative_prompt,
+        model = Model.V3,
+        action = Action.GENERATE,
+        sampler = sampler,
+        steps = steps,
+        sm = sema,
+        sm_dyn = dyn,
+        scale = scale,
+        cfg_rescale = cfg_rescale,
+        width=image_size[0],
+        height=image_size[1],
+        n_samples=n_samples,
     )
 
 async def main():
@@ -139,7 +137,7 @@ async def main():
     min = config['prompt']['min_length']
     max = config['prompt']['max_length']
     list = prompt_combinations(prompt_list,const_positive_prompt,min,max)
-    for prompt in tqdm(list):
+    for prompt in tqdm.tqdm(list):
         metadata=metadata_builder(prompt,const_negative_prompt)
         await gen(metadata)
 
