@@ -13,8 +13,8 @@ password = 'UAATibn"mB#=@Z8'
 #倘若需要自定义，则应如此输入
 #image_size = [512,768]
 image_size = "NORMAL_PORTRAIT"
-#图像种子，为0则随机，否则按照提供的种子生成图像，种子数字必须在1到4294967295之间
-seed = 0
+#图像种子，为0或留空则随机，否则按照提供的种子生成图像
+seed = 114514
 #步数，默认28
 steps = 28
 #采样器，可选采样器：k_euler，k_euler_ancestral，k_dpmpp_2s_ancestral，ddim，k_dpmpp_2m，k_dpmpp_sde，留空则为k_euler

@@ -1,4 +1,4 @@
-import asyncio,toml,itertools,tqdm
+import asyncio,toml,itertools,tqdm,random
 from novelai import NAIClient,Metadata,Model,Action,Resolution,Sampler
 
 with open("./config.toml",'r',encoding="utf-8") as f:
@@ -129,8 +129,11 @@ async def main():
         )
         for image in output:
             image.save("./output",f"{prompt}.png")
-
     client = await init()
+    try:
+        seed = config["option"]["seed"]
+    except:
+        seed = 0
     prompt_list = config['prompt']['list']
     const_positive_prompt = config['prompt']['const_positive_prompt']
     const_negative_prompt = config['prompt']['const_negative_prompt']
@@ -139,6 +142,8 @@ async def main():
     list = prompt_combinations(prompt_list,const_positive_prompt,min,max)
     for prompt in tqdm.tqdm(list):
         metadata=metadata_builder(prompt,const_negative_prompt)
+        if seed == 0:
+            metadata.seed=random.randint(1,999999999)
         await gen(metadata)
 
 asyncio.run(main())
