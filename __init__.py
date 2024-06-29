@@ -1,4 +1,4 @@
-import asyncio,toml,itertools
+import asyncio,toml,itertools,tqdm
 from novelai import NAIClient,Metadata,Model,Action,Resolution
 
 with open("./config.toml",'r',encoding="utf-8") as f:
@@ -52,7 +52,7 @@ async def main():
     const_positive_prompt = config['prompt']['const_positive_prompt']
     const_negative_prompt = config['prompt']['const_negative_prompt']
     list = prompt_combinations(prompt_list,const_positive_prompt,3,1)
-    for prompt in list:
+    for prompt in tqdm(list):
         await gen(prompt,const_negative_prompt)
 
 asyncio.run(main())
