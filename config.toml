@@ -6,12 +6,13 @@ username = ""
 password = ""
 
 [option]
-#图像分辨率，必须是以下三个
-#832X1216：NORMAL_PORTRAIT
-#1216X832：NORMAL_LANDSCAPE
-#1024X1024：NORMAL_SQUARE
-#如果留空，那么将会在这三个里随机
-image_size = ""
+#图像分辨率,支持以下选项
+#NORMAL_PORTRAIT(832X1216)
+#NORMAL_LANDSCAPE(1216X832)
+#NORMAL_SQUARE(1024X1024)
+#倘若需要自定义，则应如此输入
+#image_size = [512,768]
+image_size = "NORMAL_PORTRAIT"
 #图像种子，为0则随机，否则按照提供的种子生成图像，种子数字必须在1到4294967295之间
 seed = 0
 #步数，默认28
@@ -19,13 +20,15 @@ steps = 28
 #采样器，可选采样器：k_euler，k_euler_ancestral，k_dpmpp_2s_ancestral，ddim，k_dpmpp_2m，k_dpmpp_sde，留空则为k_euler
 sampler = "k_euler_ancestral"
 #是否开启SMEA，True开启，False关闭
-SMEA = "True"
+SMEA = true
 #是否开启DYN，True开启，False关闭，开启DYN会自动开SMEA
-DYN = "False"
+DYN = false
 #Prompt Guidance默认5，范围0-10，步进0.1
 cfg_scale = 5
 #Prompt Guidance Rescale默认0，范围0-1，步进0.02
 cfg_rescale = 0
+#Number of images to return 每批图片生成数，范围1~4，整数
+n_samples = 1
 
 [prompt]
 #固定tag，会拼接在画师tag后

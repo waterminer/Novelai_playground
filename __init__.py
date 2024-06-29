@@ -1,8 +1,5 @@
-import asyncio,toml,itertools
-import random
-
-import novelai
-from novelai import NAIClient,Metadata,Model,Action,Resolution
+import asyncio,toml,itertools,tqdm
+from novelai import NAIClient,Metadata,Model,Action,Resolution,Sampler
 
 with open("./config.toml",'r',encoding="utf-8") as f:
     config = toml.load(f)
@@ -15,7 +12,7 @@ try:
 except:
     proxy=None
 
-
+# 提示词排列组合函数
 def prompt_combinations(prompt_list:list[str],prompt:str,max_length:int,min_length:int)->list[str]:
     res = []
     if max_length<min_length: raise RuntimeError("min_length bigger than max_length")
@@ -24,49 +21,86 @@ def prompt_combinations(prompt_list:list[str],prompt:str,max_length:int,min_leng
         res.extend([f"{element},{prompt}" for element in temp])
     return res
 
-def determine_resolution(image_size):
-    if not image_size:  # 检查image_size是否为空
-        random_number = random.randint(1, 6)
-        if random_number in {1, 2, 3, 4}:
-            return Resolution.NORMAL_PORTRAIT
-        elif random_number == 5:
-            return Resolution.NORMAL_LANDSCAPE
-        else:  # 当random_number为6时
-            return Resolution.NORMAL_SQUARE
-    else:
-        if image_size == "NORMAL_PORTRAIT":
-            return Resolution.NORMAL_PORTRAIT
-        elif image_size == "NORMAL_LANDSCAPE":
-            return Resolution.NORMAL_LANDSCAPE
-        elif image_size == "NORMAL_SQUARE":
-            return Resolution.NORMAL_SQUARE
-        else:
-            return Resolution.NORMAL_PORTRAIT
-        return image_size
+# 按照传入参数确定图片尺寸，如果没输入则按用户自定义尺寸处理
+def determine_resolution(image_size)->tuple[int]:
+    match image_size:
+        case "NORMAL_PORTRAIT":
+            return Resolution.NORMAL_PORTRAIT.value
+        case "NORMAL_LANDSCAPE":
+            return Resolution.NORMAL_LANDSCAPE.value
+        case "NORMAL_SQUARE":
+            return Resolution.NORMAL_SQUARE.value
+        case "LARGE_PORTRAIT":
+            return Resolution.LARGE_PORTRAIT.value
+        case "LARGE_LANDSCAPE":
+            return Resolution.LARGE_LANDSCAPE.value
+        case "LARGE_SQUARE":
+            return Resolution.LARGE_SQUARE.value
+        case "SMALL_PORTRAIT":
+            return Resolution.SMALL_PORTRAIT.value
+        case "SMALL_LANDSCAPE":
+            return Resolution.SMALL_LANDSCAPE.value
+        case "SMALL_SQUARE":
+            return Resolution.SMALL_SQUARE.value
+        case _:
+            return check_custom_resolution(image_size)
+        
+def check_custom_resolution(image_size)->tuple[int]:
+    if isinstance(image_size,list) and len(image_size)==2:
+        for element in image_size:
+            if not isinstance(element,int):
+                raise ValueError("'image_size' value error!")
+        return tuple(image_size)
+    raise ValueError("'image_size' value error!")
+
 
 def determine_Sampler(sampler):
-    if not sampler:  # 检查image_size是否为空
-        return novelai.Sampler.EULER
-    else:
-        if sampler == "k_euler":
-            return novelai.Sampler.EULER
-        elif sampler == "k_euler_ancestral":
-            return novelai.Sampler.EULER_ANC
-        elif sampler == "k_dpmpp_2s_ancestral":
-            return novelai.Sampler.DPM2S_ANC
-        elif sampler == "ddim":
-            return novelai.Sampler.DDIM
-        elif sampler == "k_dpmpp_2m":
-            return novelai.Sampler.DPM2M
-        elif sampler == "k_dpmpp_sde":
-            return novelai.Sampler.DPMSDE
-async def main():
-    async def init():
-        client = NAIClient(username, password, proxy=proxy)
-        await client.init(timeout=1000)
-        return client
+    match sampler:
+        case "k_euler":
+            return Sampler.EULER
+        case "k_euler_ancestral":
+            return Sampler.EULER_ANC
+        case "k_dpmpp_2s_ancestral":
+            return Sampler.DPM2S_ANC
+        case "ddim":
+            return Sampler.DDIM
+        case "k_dpmpp_2m":
+            return Sampler.DPM2M
+        case "k_dpmpp_sde":
+            return Sampler.DPMSDE
+        case _:
+            return Sampler.EULER
 
-    async def gen(prompt,negative_prompt,image_size,seed,sampler,steps,SMEA,DYN,cfg_scale,cfg_rescale):
+
+def metadata_builder(prompt:str,negative_prompt:str)->Metadata:
+    option = config["option"]
+    image_size = determine_resolution(option["image_size"])
+    sampler = determine_Sampler(option["sampler"])
+    try:
+        steps = option["steps"]
+    except:
+        steps = 28
+    try:
+        sema = option["SMEA"]
+    except:
+        sema = True
+    try:
+        dyn = option["DYN"]
+    except:
+        dyn = False
+    try:
+        scale = option["cfg_scale"]
+    except:
+        scale = 5
+    try: 
+        cfg_rescale = option["cfg_rescale"]
+    except:
+        cfg_rescale = 0
+    try:
+        n_samples = option["n_samples"]
+    except:
+        n_samples = 1
+    return Metadata(
         metadata = Metadata(
             prompt= prompt,
             negative_prompt = negative_prompt,
@@ -74,17 +108,24 @@ async def main():
             action = Action.GENERATE,
             sampler = sampler,
             steps = steps,
-            sm = SMEA,
-            sm_dyn = DYN,
-            scale = cfg_scale,
+            sm = sema,
+            sm_dyn = dyn,
+            scale = scale,
             cfg_rescale = cfg_rescale,
-            res_preset = image_size,
-            n_samples=1,
+            width=image_size[0],
+            height=image_size[1],
+            n_samples=n_samples,
             )
-        if seed != 0:
-            metadata.seed = seed
-        print(f"prompt:{metadata.prompt}\nEstimated Anlas cost: {metadata.calculate_cost(is_opus=False)}")
+    )
 
+async def main():
+    async def init():
+        client = NAIClient(username, password, proxy=proxy)
+        await client.init(timeout=1000)
+        return client
+
+    async def gen(metadata:Metadata):
+        print(f"prompt:{metadata.prompt}\nEstimated Anlas cost: {metadata.calculate_cost(is_opus=False)}")
         output = await client.generate_image(
             metadata, verbose=False, is_opus=False
         )
@@ -95,20 +136,9 @@ async def main():
     prompt_list = config['prompt']['list']
     const_positive_prompt = config['prompt']['const_positive_prompt']
     const_negative_prompt = config['prompt']['const_negative_prompt']
-    const_steps = config['option']['steps']
-    const_sampler = determine_Sampler(config['option']['sampler'])
-    const_SMEA = config['option']['SMEA']
-    const_DYN = config['option']['DYN']
-    if const_DYN:
-        const_SMEA = True
-    const_cfg_scale = config['option']['cfg_scale']
-    const_cfg_rescale = config['option']['cfg_rescale']
-    const_seed = config['option']['seed']
-    const_image_size = determine_resolution(config['option']['image_size'])
-
     list = prompt_combinations(prompt_list,const_positive_prompt,3,1)
-    for prompt in list:
-        await gen(prompt,const_negative_prompt,const_image_size,const_seed,const_sampler,const_steps,
-                  const_SMEA,const_DYN,const_cfg_scale,const_cfg_rescale)
+    for prompt in tqdm(list):
+        metadata=metadata_builder(prompt,const_negative_prompt)
+        await gen(metadata)
 
 asyncio.run(main())
