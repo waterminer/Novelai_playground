@@ -31,11 +31,15 @@ cfg_rescale = 0
 n_samples = 1
 
 [prompt]
-#固定tag，会拼接在画师tag后
+#固定tag，会拼接在list组合后
 const_positive_prompt = "1girl,cat_girl,long_hair,blue_eyes,white_hair,blue_dress,animal_ears,cat_ears,cat_tail"
 #负面tag
-const_negative_prompt = "lowres, {bad}, error, fewer, extra, missing, worst quality, jpeg artifacts, bad quality, watermark, unfinished, displeasing, chromatic aberration, signature, extra digits, artistic error, username, scan, [abstract],{{weibo_username}},female_pubic_hair,{{weibo_logo}},low quality,@_@,chibi,character doll,{{{{{chibi,doll}}}}},inset"
-#画师tag，这里的画师tag会被排列组合后用于生成
+const_negative_prompt = ""
+#列表最小值
+min_length = 1
+#列表最大值
+max_length = 2
+#组合可选列表
 list = [
     'wlop',
     'ask (askzy)',

@@ -13,7 +13,7 @@ except:
     proxy=None
 
 # 提示词排列组合函数
-def prompt_combinations(prompt_list:list[str],prompt:str,max_length:int,min_length:int)->list[str]:
+def prompt_combinations(prompt_list:list[str],prompt:str,min_length:int,max_length:int)->list[str]:
     res = []
     if max_length<min_length: raise RuntimeError("min_length bigger than max_length")
     for length in range(min_length,max_length+1):
@@ -136,7 +136,9 @@ async def main():
     prompt_list = config['prompt']['list']
     const_positive_prompt = config['prompt']['const_positive_prompt']
     const_negative_prompt = config['prompt']['const_negative_prompt']
-    list = prompt_combinations(prompt_list,const_positive_prompt,3,1)
+    min = config['prompt']['min_length']
+    max = config['prompt']['max_length']
+    list = prompt_combinations(prompt_list,const_positive_prompt,min,max)
     for prompt in tqdm(list):
         metadata=metadata_builder(prompt,const_negative_prompt)
         await gen(metadata)
