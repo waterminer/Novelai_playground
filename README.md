@@ -178,8 +178,8 @@ rules_file="./rules/example.json"
     #标准写法
     "键值":{
         "list":[
-            {"prompt":"被替换的结果1","weight":<权重>}，
-            {"prompt":"被替换的结果2","weight":<权重>}，
+            {"prompt":"被替换的结果1","weight":<权重>},
+            {"prompt":"被替换的结果2","weight":<权重>},
             ...
         ]
     }
