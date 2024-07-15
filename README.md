@@ -132,10 +132,10 @@ repeat = 5
 ```toml
 #排列组合列表
 [combinations]
-max=3
-min=1
-list=[a,b,c]
-mode="forward"
+max = 3
+min = 1
+list = ["a","b","c"]
+mode = "forward"
 ```
 
 `mode`支持两种选项：
