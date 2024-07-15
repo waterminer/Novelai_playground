@@ -1,57 +1,12 @@
 [proxy]
-host = "http://127.0.0.1:8080"
+host = ""
 
 [account]
-username = "waterminer6@gmail.com"
-password = 'UAATibn"mB#=@Z8'
-
-[option]
-#图像分辨率,支持以下选项
-#NORMAL_PORTRAIT(832X1216)
-#NORMAL_LANDSCAPE(1216X832)
-#NORMAL_SQUARE(1024X1024)
-#倘若需要自定义，则应如此输入
-#image_size = [512,768]
-image_size = "NORMAL_PORTRAIT"
-#图像种子，为0或留空则随机，否则按照提供的种子生成图像
-seed = 114514
-#步数，默认28
-steps = 28
-#采样器，可选采样器：k_euler，k_euler_ancestral，k_dpmpp_2s_ancestral，ddim，k_dpmpp_2m，k_dpmpp_sde，留空则为k_euler
-sampler = "k_euler"
-#是否开启SMEA，True开启，False关闭
-SMEA = true
-#是否开启DYN，True开启，False关闭，开启DYN会自动开SMEA
-DYN = false
-#Prompt Guidance默认5，范围0-10，步进0.1
-cfg_scale = 5
-#Prompt Guidance Rescale默认0，范围0-1，步进0.02
-cfg_rescale = 0
-#Number of images to return 每批图片生成数，范围1~4，整数
-n_samples = 1
+username = ""
+password = ""
 
 [prompt]
-#固定tag，会拼接在list组合后
-const_positive_prompt = "1girl,cat_girl,long_hair,blue_eyes,white_hair,blue_dress,animal_ears,cat_ears,cat_tail"
+#提示词
+prompt = ""
 #负面tag
-const_negative_prompt = ""
-#列表最小值
-min_length = 1
-#列表最大值
-max_length = 5
-#组合可选列表
-list = [
-    'wlop',
-    'ask (askzy)',
-    'zankuro',
-    'tyakomes',
-    'tsukimi_(xiaohuasan)',
-    'tsubasa_tsubasa',
-    'shiratama_(shiratamaco)',
-    'saru',
-    'saekiya_sabou',
-    'saijo1201',
-    'ryoku_sui',
-    'ao_jun',
-    'amashiro_natsuki'
-]
+negative_prompt = ""

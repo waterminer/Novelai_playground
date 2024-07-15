@@ -1,0 +1,21 @@
+{
+    "hair_color":{
+        "list":[
+            {"prompt":"red hair","weight":0.25},
+            {"prompt":"green hair","weight":1.0},
+            {"prompt":"blue hair","weight":1.0},
+            {"prompt":"white hair","weight":1.0},
+            {"prompt":"black hair","weight":0.7},
+            {"prompt":"orange hair","weight":1.0},
+            {"prompt":"blonde hair","weight":1.0},
+            {"prompt":"aqua hair","weight":1.0},
+            {"prompt":"brown hair","weight":1.0},
+            {"prompt":"light brown hair","weight":1.0},
+            {"prompt":"purple hair","weight":0.5},
+            {"prompt":"pink hair","weight":0.5}
+        ]
+    },
+    "color":{
+        "list":["red","green","blue","white","black","orange","yellow","aqua","brown","light_brown","purple","pink"]
+    }
+}
