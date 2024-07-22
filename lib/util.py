@@ -15,13 +15,10 @@ def prompt_combinations(
         match mode:
             case "forward":
                 res.extend([f"{element},{prompt}" for element in temp])
-                break
             case "behind":
                 res.extend([f"{prompt},{element}" for element in temp])
-                break
             case _:
                 res.extend([f"{element},{prompt}" for element in temp])
-                break
     return res
 
 
