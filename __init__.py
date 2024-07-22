@@ -27,15 +27,17 @@ async def main():
         combinations_list = combinations_conf.get("list")
         max_length = combinations_conf.get("max")
         min_length = combinations_conf.get("min")
-    if os.path.exists("./crash_dump.json"):
-        with open("./crash_dump.json","rb") as f:
+    if os.path.exists("./crash_dump"):
+        print("检测到崩溃记录，正在读取断点进度")
+        with open("./crash_dump","rb") as f:
             prompt_list = json.load(f)
+        os.remove("./crash_dump")
     else:
         prompt_list = []
         for i in range(0,repeat):
             prompt = convert_prompt(prompt_raw,rules)
             if combinations_conf:
-                prompt_list.extend(prompt_combinations(combinations_list,prompt,max_length,min_length))
+                prompt_list.extend(prompt_combinations(combinations_list,prompt,min_length=min_length,max_length=max_length))
             else:
                 prompt_list.extend([prompt])
     try:
